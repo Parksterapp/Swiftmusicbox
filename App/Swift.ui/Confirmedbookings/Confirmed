@@ -1,0 +1,100 @@
+import UIKit
+
+class ConfirmedBookingsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+
+    // MARK: - Properties
+    
+    var artist: Artist? // Set this property to the logged-in artist
+    var confirmedBookings: [BookingRequest] = [] // Populate this array with actual confirmed bookings data
+
+    // MARK: - UI Components
+    
+    let bookingsLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Confirmed Bookings"
+        label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        return label
+    }()
+    
+    let bookingsTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.backgroundColor = .white
+        tableView.separatorStyle = .none
+        return tableView
+    }()
+
+    // MARK: - Lifecycle Methods
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureUI()
+        fetchConfirmedBookings()
+    }
+
+    // MARK: - Private Methods
+    
+    private func configureUI() {
+        view.backgroundColor = .white
+
+        view.addSubview(bookingsLabel)
+        view.addSubview(bookingsTableView)
+
+        // Set up constraints (adjust as needed for your layout)
+        bookingsLabel.translatesAutoresizingMaskIntoConstraints = false
+        bookingsTableView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            bookingsLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            bookingsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            
+            bookingsTableView.topAnchor.constraint(equalTo: bookingsLabel.bottomAnchor, constant: 10),
+            bookingsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bookingsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bookingsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+
+        bookingsTableView.dataSource = self
+        bookingsTableView.delegate = self
+
+        // Register custom cell
+        bookingsTableView.register(BookingRequestTableViewCell.self, forCellReuseIdentifier: "BookingRequestCell")
+    }
+
+    private func fetchConfirmedBookings() {
+        // Fetch and populate confirmed bookings data for the artist
+        // Replace this with your actual data fetching logic
+        // For example, you might fetch confirmed bookings from a database or API
+        // In this example, we're using a sample array
+        confirmedBookings = [
+            BookingRequest(user: User(name: "Event Organizer 1"), status: .confirmed, date: Date(), venue: "Venue A", message: "Confirmed booking for an event."),
+            BookingRequest(user: User(name: "Event Organizer 2"), status: .confirmed, date: Date(), venue: "Venue B", message: "Confirmed booking for the upcoming event."),
+            // Add more confirmed bookings as needed
+        ]
+
+        // Reload the table view to reflect the updated data
+        bookingsTableView.reloadData()
+    }
+
+    // MARK: - UITableViewDataSource Methods
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return confirmedBookings.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "BookingRequestCell", for: indexPath) as? BookingRequestTableViewCell else {
+            return UITableViewCell()
+        }
+
+        let confirmedBooking = confirmedBookings[indexPath.row]
+        cell.configure(with: confirmedBooking)
+
+        return cell
+    }
+
+    // MARK: - UITableViewDelegate Methods
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 120
+    }
+}
