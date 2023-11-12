@@ -1,0 +1,100 @@
+import UIKit
+
+class ProfileViewController: UIViewController {
+
+    // MARK: - UI Components
+    
+    let usernameLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    let emailLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 18)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    let subscriptionStatusLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    let subscriptionToggleButton: UIButton = {
+        let button = UIButton()
+        button.setTitleColor(.systemBlue, for: .normal)
+        button.addTarget(self, action: #selector(subscriptionToggleButtonTapped), for: .touchUpInside)
+        return button
+    }()
+
+    // Sample data for the subscription status (replace with your actual data)
+    var isSubscribed: Bool = false
+
+    // MARK: - Lifecycle Methods
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureUI()
+        updateProfile() // Call this method to update user profile information
+    }
+
+    // MARK: - Private Methods
+    
+    private func configureUI() {
+        view.backgroundColor = .white
+
+        view.addSubview(usernameLabel)
+        view.addSubview(emailLabel)
+        view.addSubview(subscriptionStatusLabel)
+        view.addSubview(subscriptionToggleButton)
+
+        // Set up constraints (adjust as needed for your layout)
+        usernameLabel.translatesAutoresizingMaskIntoConstraints = false
+        emailLabel.translatesAutoresizingMaskIntoConstraints = false
+        subscriptionStatusLabel.translatesAutoresizingMaskIntoConstraints = false
+        subscriptionToggleButton.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            usernameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            usernameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            usernameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            
+            emailLabel.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: 10),
+            emailLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            emailLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            
+            subscriptionStatusLabel.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 10),
+            subscriptionStatusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            subscriptionStatusLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+
+            subscriptionToggleButton.topAnchor.constraint(equalTo: subscriptionStatusLabel.bottomAnchor, constant: 10),
+            subscriptionToggleButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        ])
+    }
+
+    private func updateProfile() {
+        // Fetch and update user profile information from your data source
+        let currentUser = UserManager.shared.getCurrentUser()
+        usernameLabel.text = currentUser?.username ?? "Guest"
+        emailLabel.text = currentUser?.email ?? ""
+        updateSubscriptionStatusLabel()
+    }
+
+    private func updateSubscriptionStatusLabel() {
+        subscriptionStatusLabel.text = isSubscribed ? "Subscribed" : "Not Subscribed"
+        subscriptionToggleButton.setTitle(isSubscribed ? "Unsubscribe" : "Subscribe", for: .normal)
+    }
+
+    // MARK: - Action Methods
+
+    @objc private func subscriptionToggleButtonTapped() {
+        // Toggle subscription status (this is just a sample, implement your logic)
+        isSubscribed.toggle()
+        updateSubscriptionStatusLabel()
+    }
+}
