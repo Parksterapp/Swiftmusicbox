@@ -1,0 +1,99 @@
+import UIKit
+
+class TopArtistsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+
+    // MARK: - Properties
+    
+    var topArtists: [Artist] = [] // Populate this array with actual top-rated artists data
+
+    // MARK: - UI Components
+    
+    let topArtistsLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Top Rated Artists"
+        label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        return label
+    }()
+    
+    let topArtistsTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.backgroundColor = .white
+        tableView.separatorStyle = .none
+        return tableView
+    }()
+
+    // MARK: - Lifecycle Methods
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureUI()
+        fetchTopArtists()
+    }
+
+    // MARK: - Private Methods
+    
+    private func configureUI() {
+        view.backgroundColor = .white
+
+        view.addSubview(topArtistsLabel)
+        view.addSubview(topArtistsTableView)
+
+        // Set up constraints (adjust as needed for your layout)
+        topArtistsLabel.translatesAutoresizingMaskIntoConstraints = false
+        topArtistsTableView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            topArtistsLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            topArtistsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            
+            topArtistsTableView.topAnchor.constraint(equalTo: topArtistsLabel.bottomAnchor, constant: 10),
+            topArtistsTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topArtistsTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topArtistsTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+
+        topArtistsTableView.dataSource = self
+        topArtistsTableView.delegate = self
+
+        // Register custom cell
+        topArtistsTableView.register(ArtistTableViewCell.self, forCellReuseIdentifier: "ArtistCell")
+    }
+
+    private func fetchTopArtists() {
+        // Fetch and populate top-rated artists data
+        // Replace this with your actual data fetching logic
+        // For example, you might fetch top artists from a database or API
+        // In this example, we're using a sample array
+        topArtists = [
+            Artist(artistId: "1", stageName: "John Doe", bio: "Talented musician", genres: ["Pop", "Rock"], channelVideos: [], ratings: [], bookingRequests: [], subscriptionStatus: true),
+            Artist(artistId: "2", stageName: "Jane Smith", bio: "Soulful singer", genres: ["R&B", "Soul"], channelVideos: [], ratings: [], bookingRequests: [], subscriptionStatus: false),
+            // Add more top-rated artists as needed
+        ]
+
+        // Reload the table view to reflect the updated data
+        topArtistsTableView.reloadData()
+    }
+
+    // MARK: - UITableViewDataSource Methods
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return topArtists.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ArtistCell", for: indexPath) as? ArtistTableViewCell else {
+            return UITableViewCell()
+        }
+
+        let topArtist = topArtists[indexPath.row]
+        cell.configure(with: topArtist)
+
+        return cell
+    }
+
+    // MARK: - UITableViewDelegate Methods
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 120
+    }
+}
