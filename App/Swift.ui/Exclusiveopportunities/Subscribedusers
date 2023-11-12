@@ -1,0 +1,99 @@
+import UIKit
+
+class ExclusiveOpportunitiesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+
+    // MARK: - Properties
+    
+    var exclusiveOpportunities: [Opportunity] = [] // Populate this array with actual exclusive opportunities data
+
+    // MARK: - UI Components
+    
+    let opportunitiesLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Exclusive Opportunities"
+        label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        return label
+    }()
+    
+    let opportunitiesTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.backgroundColor = .white
+        tableView.separatorStyle = .none
+        return tableView
+    }()
+
+    // MARK: - Lifecycle Methods
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureUI()
+        fetchExclusiveOpportunities()
+    }
+
+    // MARK: - Private Methods
+    
+    private func configureUI() {
+        view.backgroundColor = .white
+
+        view.addSubview(opportunitiesLabel)
+        view.addSubview(opportunitiesTableView)
+
+        // Set up constraints (adjust as needed for your layout)
+        opportunitiesLabel.translatesAutoresizingMaskIntoConstraints = false
+        opportunitiesTableView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            opportunitiesLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            opportunitiesLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            
+            opportunitiesTableView.topAnchor.constraint(equalTo: opportunitiesLabel.bottomAnchor, constant: 10),
+            opportunitiesTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            opportunitiesTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            opportunitiesTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+
+        opportunitiesTableView.dataSource = self
+        opportunitiesTableView.delegate = self
+
+        // Register custom cell
+        opportunitiesTableView.register(OpportunityTableViewCell.self, forCellReuseIdentifier: "OpportunityCell")
+    }
+
+    private func fetchExclusiveOpportunities() {
+        // Fetch and populate exclusive opportunities data
+        // Replace this with your actual data fetching logic
+        // For example, you might fetch exclusive opportunities from a database or API
+        // In this example, we're using a sample array
+        exclusiveOpportunities = [
+            Opportunity(title: "Exclusive Concert Invitation", description: "Join a private concert with a top artist.", date: Date(), isSubscribedOnly: true),
+            Opportunity(title: "Studio Session Giveaway", description: "Win a chance to be part of a studio recording session.", date: Date(), isSubscribedOnly: true),
+            // Add more exclusive opportunities as needed
+        ]
+
+        // Reload the table view to reflect the updated data
+        opportunitiesTableView.reloadData()
+    }
+
+    // MARK: - UITableViewDataSource Methods
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return exclusiveOpportunities.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "OpportunityCell", for: indexPath) as? OpportunityTableViewCell else {
+            return UITableViewCell()
+        }
+
+        let opportunity = exclusiveOpportunities[indexPath.row]
+        cell.configure(with: opportunity)
+
+        return cell
+    }
+
+    // MARK: - UITableViewDelegate Methods
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 120
+    }
+}
