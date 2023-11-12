@@ -1,0 +1,159 @@
+import UIKit
+
+class ArtistChannelViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+
+    // MARK: - Properties
+    
+    var artist: Artist? // Set this property to the selected artist
+    var isSubscribed: Bool = false // Set this property based on the user's subscription status
+
+    // MARK: - UI Components
+    
+    let artistProfileImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        // Set a placeholder image or load it asynchronously from the artist's profileImage URL
+        imageView.image = UIImage(named: "placeholder_image")
+        return imageView
+    }()
+    
+    let artistBioLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 18)
+        label.numberOfLines = 0
+        return label
+    }()
+    
+    let genresLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.textColor = .gray
+        return label
+    }()
+    
+    let subscriptionStatusLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 16)
+        return label
+    }()
+    
+    let videosLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Artist's Videos"
+        label.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        return label
+    }()
+    
+    let videosTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.backgroundColor = .white
+        tableView.separatorStyle = .none
+        return tableView
+    }()
+
+    // Sample data for the artist's videos (replace with your actual data)
+    var artistVideos: [Performance] = [
+        Performance(title: "Live Concert", artist: "John Doe", date: Date(), venue: "Music Hall", description: "An incredible live performance by John Doe.", videoUrl: "https://www.example.com/live_concert"),
+        Performance(title: "Acoustic Session", artist: "John Doe", date: Date(), venue: "Studio", description: "A soulful acoustic session by John Doe.", videoUrl: "https://www.example.com/acoustic_session"),
+        // Add more performances as needed
+    ]
+
+    // MARK: - Lifecycle Methods
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureUI()
+        updateSubscriptionStatusLabel()
+    }
+
+    // MARK: - Private Methods
+    
+    private func configureUI() {
+        view.backgroundColor = .white
+
+        view.addSubview(artistProfileImageView)
+        view.addSubview(artistBioLabel)
+        view.addSubview(genresLabel)
+        view.addSubview(subscriptionStatusLabel)
+        view.addSubview(videosLabel)
+        view.addSubview(videosTableView)
+
+        // Set up constraints (adjust as needed for your layout)
+        artistProfileImageView.translatesAutoresizingMaskIntoConstraints = false
+        artistBioLabel.translatesAutoresizingMaskIntoConstraints = false
+        genresLabel.translatesAutoresizingMaskIntoConstraints = false
+        subscriptionStatusLabel.translatesAutoresizingMaskIntoConstraints = false
+        videosLabel.translatesAutoresizingMaskIntoConstraints = false
+        videosTableView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            artistProfileImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            artistProfileImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            artistProfileImageView.widthAnchor.constraint(equalToConstant: 120),
+            artistProfileImageView.heightAnchor.constraint(equalToConstant: 120),
+            
+            artistBioLabel.topAnchor.constraint(equalTo: artistProfileImageView.bottomAnchor, constant: 20),
+            artistBioLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            artistBioLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            
+            genresLabel.topAnchor.constraint(equalTo: artistBioLabel.bottomAnchor, constant: 10),
+            genresLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            genresLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            
+            subscriptionStatusLabel.topAnchor.constraint(equalTo: genresLabel.bottomAnchor, constant: 10),
+            subscriptionStatusLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            
+            videosLabel.topAnchor.constraint(equalTo: subscriptionStatusLabel.bottomAnchor, constant: 20),
+            videosLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            
+            videosTableView.topAnchor.constraint(equalTo: videosLabel.bottomAnchor, constant: 10),
+            videosTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            videosTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            videosTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        ])
+
+        videosTableView.dataSource = self
+        videosTableView.delegate = self
+
+        // Register custom cell
+        videosTableView.register(VideoTableViewCell.self, forCellReuseIdentifier: "VideoCell")
+
+        // Set artist information
+        if let artist = artist {
+            title = artist.stageName
+            artistProfileImageView.image = UIImage(named: artist.profileImage)
+            artistBioLabel.text = artist.bio
+            genresLabel.text = "Genres: \(artist.genres.joined(separator: ", "))"
+        }
+    }
+
+    private func updateSubscriptionStatusLabel() {
+        subscriptionStatusLabel.text = isSubscribed ? "Subscribed" : "Not Subscribed"
+    }
+
+    // MARK: - UITableViewDataSource Methods
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return artistVideos.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "VideoCell", for: indexPath) as? VideoTableViewCell else {
+            return UITableViewCell()
+        }
+
+        let video = artistVideos[indexPath.row]
+        cell.configure(with: video)
+
+        return cell
+    }
+
+    // MARK: - UITableViewDelegate Methods
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 180
+    }
+
+    // Additional methods and actions related to subscription status can be added here
+}
