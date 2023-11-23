@@ -95,6 +95,6 @@ class WelcomeViewController: UIViewController {
     
     @objc private func loginButtonTapped() {
         // Handle login action
-        print("Login Button Tapped")
+        print("Log In Button Tapped")
     }
 }
